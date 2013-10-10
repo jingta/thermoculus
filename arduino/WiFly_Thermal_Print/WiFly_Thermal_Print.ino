@@ -22,7 +22,7 @@ char printBreakTime = 15;
 //char server[] = "www.arduino.cc";
 //char server[] = "google.com";
 //char server[] = "checkip.dyndns.com";
-char server[] = "thermoculus.herokuapp.com";
+char server[] = "thermocular.herokuapp.com";
 char token[] = "someguid";
 //IPAddress server(64,131,82,241);
 //WiFlyClient client("google.com", 80);
@@ -132,8 +132,10 @@ void httpRequest() {
     // send the HTTP PUT request:
     //client.println("GET /latest.txt HTTP/1.1");
     //client.println("Host: www.arduino.cc");
-    client.println("GET /" + token + " HTTP/1.1");
-    client.println("Host: thermoculus.herokuapp.com");
+    client.print("GET /printer/");
+    client.print(token);
+    client.println(" HTTP/1.1");
+    client.println("Host: thermocular.herokuapp.com");
     client.println("User-Agent: arduino-ethernet");
     client.println("Connection: close");
     client.println();
