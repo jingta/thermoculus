@@ -1,8 +1,12 @@
 var express = require("express");
 var app = express();
-app.use(express.logger());
+var pub = __dirname + '/public';
 var redis = require('redis-url').connect(process.env.REDISTOGO_URL);
+app.use(express.logger());
+app.use(express.static(pub));
+app.set('view engine', 'jade');
 
+// middleware for postbody parsing
 app.use(function(req, res, next) {
     var data = '';
     req.setEncoding('utf8');
@@ -15,11 +19,15 @@ app.use(function(req, res, next) {
     });
 });
 
-app.get('/', function(request, response) {
-    response.send('Welcome to Thermoculus!');
+app.get('/', function(req, res) {
+  res.send('Welcome to Thermoculus!');
 });
 
-app.get('/:key', function(request, response) {
+app.get('/test/', function(req,res) {
+    res.render('index');
+});
+
+app.get('/printer/:key', function(request, response) {
     redis.lpop(request.params.key, function (error, item) {
 	console.log("lpop starting");
 	var body = "";
@@ -40,7 +48,7 @@ app.get('/:key', function(request, response) {
 
 });
 
-app.post('/:key', function(request, response) {
+app.post('/printer/:key', function(request, response) {
     redis.rpush(request.params.key,request.rawBody);
     response.send("Pushed " + request.rawBody + " for " + request.params.key);
 });

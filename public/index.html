@@ -1,0 +1,50 @@
+<!doctype html>
+<html ng-app>
+  <head>
+    <meta charset="UTF-8">
+    <title>Welcome to Thermocular</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js"></script>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+<!-- Optional theme -->
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
+<!-- Latest compiled and minified JavaScript 
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script> -->
+  </head>
+  <body>
+    <h1>Welcome to Thermocular</h1>
+
+<div>
+<script>
+function Message($scope, $http) {
+  $scope.message = {printer: 'guest', text: ''};
+  $scope.response = '';
+  $scope.submit = function() {
+    $http.post('/printer/'+$scope.message.printer, $scope.message.text).success(function(data, status) {
+        $scope.response = status + " :: " + data;
+      }).error(function(data, status) {
+        $scope.response = status + " :: " + (data || "Request failed");
+    });
+    $scope.response = 'sending..';
+    $scope.message.text = '';
+  };
+}
+</script>
+
+<div ng-controller="Message">
+    <form name="messageForm" ng-submit="submit()">
+        Printer name: <input type="text" name="printer" ng-model="message.printer" required>
+        <span class="error" ng-show="messageForm.printer.$error.required">Required!</span><br>
+        Message text: 
+	<textarea name="text" ng-model="message.text" ng-minlength="2" ng-maxlength="5000"></textarea>
+        <span class="error" ng-show="messageForm.text.$error.minlength">Too short!</span>
+        <span class="error" ng-show="messageForm.text.$error.maxlength">Too long!</span><br>
+<input type="submit">
+      </form>
+<div>{{response}}</div>
+
+</div>
+
+  </body>
+</html>
+
