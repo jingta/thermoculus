@@ -1,4 +1,47 @@
 extends layout
 
 block content
-  h1 Welcome to Thermocular
+  script
+    $(function(){
+      $('#status a').click(function(e){
+          e.preventDefault();
+          $(this).parent().fadeOut();
+        });
+      });
+
+    function Message($scope, $http) {
+      $status = $("#status");
+      $scope.message = {printer: 'guest', text: ''};
+      $scope.response = '';
+      $scope.submit = function() {
+        $http.post('/printer/'+$scope.message.printer, $scope.message.text).success(function(data, status) {
+            $scope.response = status + " :: " + data;
+            $status.attr('class', 'alert alert-success').fadeIn();
+          }).error(function(data, status) {
+            $scope.response = status + " :: " + (data || "Request failed");
+            $status.attr('class', 'alert alert-warning').fadeIn();
+        });
+        $scope.response = 'sending..';
+        $scope.message.text = '';
+      };
+    }
+  div.starter-template
+    h1 Welcome to thermocular!
+    div(ng-controller='Message')
+      form(role="form", name='messageForm', ng-submit='submit()')
+        .form-group
+          label(for="printerName") Printer name:
+          input(class="form-control", id ="printerName" type='text', name='printer', ng-model='message.printer', required='required')
+          span.help-block.error(ng-show='messageForm.printer.$error.required') Required!
+        .form-group
+          label(for="messageText") Message text:
+          textarea(class="form-control", id ="messageText", name='text', cols='19', rows='8', ng-model='message.text', ng-minlength='2', ng-maxlength='5000', ng-trim='false')
+          span.help-block.error(ng-show='messageForm.text.$error.minlength') Too short!
+          span.help-block.error(ng-show='messageForm.text.$error.maxlength') Too long!
+        input(type='submit', class='btn btn-success')
+        br
+        br
+        div(id='status')
+            a.close(href='#') ×
+            strong Status: {{response}}
+    hr
