@@ -2,6 +2,7 @@
 <html ng-app>
   <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Welcome to Thermocular</title>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.1.1/angular.min.js"></script>
 <!-- Latest compiled and minified CSS -->
@@ -76,33 +77,47 @@ function Message($scope, $http) {
   $scope.submit = function() {
     $http.post('/printer/'+$scope.message.printer, $scope.message.text).success(function(data, status) {
         $scope.response = status + " :: " + data;
+    $scope.addAlert(status + " :: " + data);
       }).error(function(data, status) {
         $scope.response = status + " :: " + (data || "Request failed");
     });
     $scope.response = 'sending..';
+    $scope.addAlert('sending..');
     $scope.message.text = '';
+  };
+$scope.alerts = [];
+  $scope.addAlert = function(text) {
+    $scope.alerts.push({type: 'success', msg: text});
+  };
+  $scope.closeAlert = function(index) {
+    $scope.alerts.splice(index, 1);
   };
 }
 </script>
 
 <div ng-controller="Message">
     <form name="messageForm" ng-submit="submit()">
-        
+
+      <div class="form-group">
         Printer name: 
 	<span class="error label label-danger" ng-show="messageForm.printer.$error.required">Required!</span>
 	<input type="text" class="form-control" name="printer" ng-model="message.printer" required>
+      </div>
 
-
+      <div class="form-group">
         Message text: 
         <span class="error label label-danger" ng-show="messageForm.text.$error.minlength">Too short!</span>
         <span class="error label label-danger" ng-show="messageForm.text.$error.maxlength">Too long!</span>
 	<textarea name="text" class="form-control" cols=19 rows=8 ng-model="message.text" ng-minlength="2" ng-maxlength="5000" ng-trim="false"></textarea>
+      </div>
 
-
-	<input type="submit" class="btn btn-default">
+	<div class="form-group"><input type="submit" class="btn btn-default"></div>
       </form>
 
-    <div>{{response}}</div>
+    
+    <div class="well well-sm">
+      {{response}}
+    </div>
 
 </div>
 
